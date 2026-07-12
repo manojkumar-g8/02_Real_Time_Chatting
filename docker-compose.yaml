@@ -12,15 +12,14 @@ services:
   02_real_time_chatting_client_service:
     build:
       context: ./client
+      args:
+        VITE_API_URL: "http://localhost:5500/api"
+        VITE_SOCKET_URL: "http://localhost:5500/"
     container_name: 02_real_time_chatting_clint_compose_container
     restart: always
 
     ports:
       - "4000:4000"
-
-    environment:
-      VITE_API_URL: "http://16.113.27.31:5500/api"
-      VITE_SOCKET_URL: "http://16.113.27.31:5500/"
 
     depends_on:
       - 02_real_time_chatting_server_service
