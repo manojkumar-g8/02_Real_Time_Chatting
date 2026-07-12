@@ -1,0 +1,37 @@
+name: 02_real_time_chatting_ci_cd
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    real_time_chatting_ci_cd:
+        runs-on: ubuntu-latest
+        steps:
+            - name: checkout repo
+              uses: actions/checkout@v3
+
+            - name: setup node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 24
+
+            - name: install server dependencies
+              working-directory: ./server
+              run: npm install
+
+            - name: run lint
+              working-directory: ./server
+              run: npm run lint
+
+            - name: install client dependencies
+              working-directory: ./client
+              run: npm install
+
+            - name: build docker client image
+              run: docker build -t 02_real_time_chatting_client_image ./client
+
+            - name: build docker server image
+              run: docker build -t 02_real_time_chatting_server_image ./server
