@@ -1,0 +1,20 @@
+services:
+  02_real_time_chatting_server_service:
+    build: ./server
+    container_name: 02_real_time_chatting_server_compose_container
+    restart: always
+
+    env_file:
+      - ./server/.env
+    ports:
+      - "5500:5500"
+
+  02_real_time_chatting_client_service:
+    build: ./client
+    container_name: 02_real_time_chatting_clint_compose_container
+    restart: always
+
+    env_file:
+      - ./client/.env
+    ports:
+      - "4000:4000"
