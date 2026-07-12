@@ -42,7 +42,7 @@ export const useChat = create<ChatStateProps>((set, get) => ({
         try {
             const res = await axiosInstance.post(
                 `/messages/send/${selectedUser._id}`,
-                messageData
+                messageData,
             );
             set({ messages: [...messages, res.data.data] });
         } catch (error: any) {

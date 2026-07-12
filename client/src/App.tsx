@@ -25,11 +25,39 @@ const App = () => {
         <div>
             <Navbar />
             <Routes>
-                <Route path="/" element={authUser ? <HomePage /> : <Navigate to="/login" replace />} />
-                <Route path="/signup" element={!authUser ? <SignUpPage /> : <Navigate to="/" replace />} />
-                <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to="/" replace />} />
+                <Route
+                    path="/"
+                    element={
+                        authUser ? (
+                            <HomePage />
+                        ) : (
+                            <Navigate to="/login" replace />
+                        )
+                    }
+                />
+                <Route
+                    path="/signup"
+                    element={
+                        !authUser ? <SignUpPage /> : <Navigate to="/" replace />
+                    }
+                />
+                <Route
+                    path="/login"
+                    element={
+                        !authUser ? <LoginPage /> : <Navigate to="/" replace />
+                    }
+                />
                 <Route path="/settings" element={<SettingsPage />} />
-                <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to="/login" replace />} />
+                <Route
+                    path="/profile"
+                    element={
+                        authUser ? (
+                            <ProfilePage />
+                        ) : (
+                            <Navigate to="/login" replace />
+                        )
+                    }
+                />
             </Routes>
             <Toaster />
         </div>

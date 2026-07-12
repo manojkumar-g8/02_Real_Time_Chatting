@@ -10,10 +10,10 @@ const PORT = process.env.PORT;
 
 // middlewares
 app.use(
-  cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true,
-  }),
+    cors({
+        origin: process.env.FRONTEND_URL,
+        credentials: true,
+    }),
 );
 app.use(cookieparser());
 app.use(express.json());
@@ -27,5 +27,5 @@ app.use("/api/messages", messageRoutes);
 
 // listen to the PORT
 server.listen(PORT, () => {
-  console.log(`Server listening on PORT: ${PORT}`);
+    console.log(`Server listening on PORT: ${PORT}`);
 });
