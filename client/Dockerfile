@@ -7,8 +7,15 @@ COPY package*.json .
 RUN npm install
 
 COPY . .
+ARG VITE_API_URL
+ARG VITE_SOCKET_URL
 
-RUN  npm run build
+# If you want them available at runtime, you must set ENV
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
+
+
+RUN npm run build
 
 EXPOSE 4000
 
