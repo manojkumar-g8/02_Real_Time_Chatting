@@ -1,37 +1,77 @@
 name: 02_real_time_chatting_ci_cd
 
 on:
-    push:
-        branches: [main]
-    pull_request:
-        branches: [main]
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-    real_time_chatting_ci_cd:
-        runs-on: ubuntu-latest
-        steps:
-            - name: checkout repo
-              uses: actions/checkout@v3
+  real_time_chatting_ci_cd:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
 
-            - name: setup node.js
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 24
+      - name: setup node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 24
 
-            - name: install server dependencies
-              working-directory: ./server
-              run: npm install
+      - name: install server dependencies
+        working-directory: ./server
+        run: npm install
 
-            - name: run lint
-              working-directory: ./server
-              run: npm run lint
+      - name: run lint
+        working-directory: ./server
+        run: npm run lint
 
-            - name: install client dependencies
-              working-directory: ./client
-              run: npm install
+      - name: install client dependencies
+        working-directory: ./client
+        run: npm install
 
-            - name: build docker client image
-              run: docker build -t 02_real_time_chatting_client_image ./client
+      - name: build docker client image
+        run: docker build -t 02_real_time_chatting_client_image ./client
 
-            - name: build docker server image
-              run: docker build -t 02_real_time_chatting_server_image ./server
+      - name: build docker server image
+        run: docker build -t 02_real_time_chatting_server_image ./server
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: add EC2 host to know_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+
+      - name: Write SSH key
+        run: |
+          echo "${EC2_KEY}" > ec2_key.pem
+          chmod 600 ec2_key.pem
+        env:
+          EC2_KEY: ${{ secrets.EC2_KEY }}
+
+      - name: Deploy on EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_APP_DIR: ${{ secrets.EC2_APP_DIR }}
+        run: |
+          ssh -i ec2_key.pem ${EC2_USER}@${EC2_HOST} << EOF
+            set -e 
+            cd "${EC2_APP_DIR}"  || exit 1
+            
+            # fetch latest code 
+            git fetch --all
+            git reset --hard origin/main 
+
+            # rebuild containers
+            docker compose up -d --build 
+
+            # clean old images
+            docker image prune -f 
+
+            docker compose ps 
+          EOF
